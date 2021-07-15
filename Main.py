@@ -27,35 +27,66 @@ class BaseItem:
         self.useAction = useAction
         self.quantity = quantity
 
+    def setQuantity(self, quantity):
+        if self.quantity + quantity >= 0:
+            self.quantity = self.quantity + quantity
+        else:
+            return('Invalid amount')
 
-    #def use(self, Player):
+    def getQuantity(self):
+        return self.quantity
 
-
-
+# item tests
+'''
 apple = BaseItem('Apple', 'A bruised red apple', 'Eat', 1)
 
-pear = BaseItem()
+apple.getQuantity()
 
+apple.setQuantity(1)
+
+apple.getQuantity()
+
+apple.setQuantity(-2)
+
+apple.getQuantity()
+
+#pear = BaseItem()
+
+'''
+
+# Create functions
+# ModifiyHealth 
+# Killed
+# ShowDeathScreen
 
 class Player:
     name = 'BLANK'
-    life = 100
+    health = 100
     #HUNGER = 100
     #THIRST = 100
     player_inventory = []
     location = 'Starting Room'
     
     # Player constructor
-    def __init__(self, name, life, inventory):
+    def __init__(self, name, health, inventory):
         self.name = name
-        self.life = life
+        self.health = health
         self.inventory = inventory
     
-    def add_to_inventory(BaseItem, item_to_give):
-        if check_item(item, Item):
-            inventory.append(item)
+    def Add_to_inventory(BaseItem, item_to_give):
+        if check_item(item_to_give, Item):
+            inventory.append(item_to_give)
         
-    
+    def Take_Damage(Damage, DamageEvent, DamageCauser):
+        damage_Dealt = ModifyHeath(-Damage)
+        
+        if health <= 0:
+            Killed(DamageEvent, DamageCauser)
+            
+    def Killed(target):
+        if isinstance(target, Player):
+            ShowDeathScreen()
+            
 
         
 #     def use_item(self)
