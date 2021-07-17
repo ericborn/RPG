@@ -42,9 +42,10 @@ class BaseItem:
         return()
             
 class FoodItem(BaseItem):
-    def __init__(self, heal_amount = 5):
+    def __init__(self, name, description, useAction, quantity, heal_amount):
+        super().__init__(name, description, useAction, quantity)
         self.useAction = 'Consume'
-    
+
     def use_item(self, Player, item):
         # check for valid
         if(Player & Player.Get_Inventoryitem.quantity > 0):
@@ -84,14 +85,15 @@ class Inventory:
     # try to add an item to the players inventory
     # just performs checks then performs add to inventory if successful
     def Try_Add_Item(self, item_to_give):
-        if (item_to_give & item_to_give.get_quantity > 0):
+        if (item_to_give.get_quantity() > 0):
             self.Add_Item(item_to_give)
         else:
             return('Invalid item')
-        
+    
+    # add the item to the players item list
     def Add_Item(self, item):
         new_item = item
-        new_item.setQuantity(item.getQuantity())
+        new_item.set_quantity(item.get_quantity())
         self.item_list.append(new_item)
         return(new_item)
     
@@ -145,20 +147,22 @@ Tim.Take_Damage('Slash', -10, 'dragon')
 
 Tim.Get_health()
 
-apple = BaseItem('Apple', 'A bruised red apple', 'Eat', 1)
-apple = FoodItem(apple)
+apple = FoodItem('Apple', 'A bruised red apple', 'Eat', 1, 5)
 
 Tim.inventory.Get_Inventory()
 
 apple.get_quantity()
-apple.
 
 Tim.inventory.Try_Add_Item(apple)
 # Tim.Add_to_inventory(apple)
 
-# !!! TODO !!!
-# figure out how to print the name of the base item, not the object itself
 Tim.inventory.Get_Inventory()
+
+Jim = Player('Jim')
+
+Jim.inventory.Try_Add_Item(apple)
+
+Jim.inventory.Get_Inventory()
 
 # test_list = [apple, apple, 'apple']
 # print(test_list[0].name)
