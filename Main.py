@@ -50,8 +50,9 @@ class FoodItem(BaseItem):
         # check for valid
         if(Player & Player.Get_Inventoryitem.quantity > 0):
             Player.Set_Health(self.HealAmount)
-    
-    
+
+
+
 # item tests
 '''
 apple = BaseItem('Apple', 'A bruised red apple', 'Eat', 1)
@@ -136,6 +137,12 @@ class Player:
     # check the players health    
     def Get_health(self):
         return self.health
+    
+    def Use_Item(self, item):
+        item.use_item()
+        
+    def Remove_Item(self, item):
+        self.inventory.remove(item)
 
 Tim = Player('Tim')
 
@@ -155,6 +162,8 @@ apple.get_quantity()
 
 Tim.inventory.Try_Add_Item(apple)
 # Tim.Add_to_inventory(apple)
+
+Tim.inventory.item_list.Remove_Item(apple)
 
 Tim.inventory.Get_Inventory()
 
