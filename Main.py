@@ -7,6 +7,7 @@ create room class which stores description text and inventory list for items
 to be taken by player
 """
 #import inspect
+import random as rand
 
 location_dict: dict = {'start': ('This is the starting room, choose to inspect'
                        ' the room by typing inspect. Move to another area by '
@@ -22,18 +23,7 @@ location_dict: dict = {'start': ('This is the starting room, choose to inspect'
                  'west': 'The west side of the castle, you can move to the end',
                  'end': 'The dragon'}
 
-game_active = True
-
-def hit_check(attacker, attacked, damage_type):
-    evade = attacked.evasion
-    cold_res = attacked.cold_resistance
-    lightning_res = attacked.lightning_resistance
-    fire_res = attacked.fire_resistance
-    
-    accuracy = attacker.accuracy
-    weapon = attacker.weapon
-    
-
+game_active = True    
 
 class Location:
     def __init__(self, location: str):
@@ -81,8 +71,14 @@ class FoodItem(BaseItem):
             return()
 
 class Melee_Weapon(BaseItem):
-    damage_amount: list = [1, 2]
+    
+    weapon_type = 'Fists'
+    damage_amount: list = [1, 3]
     damage_type: str = 'Physical'
+    
+rusty_sword = Melee_Weapon('Rusty Sword', 'A Rusty Sword', 'Slash', 1)
+
+rand.randrange(rusty_sword.damage_amount[0], rusty_sword.damage_amount[1] + 1)
 
 # item tests
 '''
@@ -147,7 +143,7 @@ class Player:
     lightning_resistance: int = 1
     fire_resistance: int = 1
     accuracy: int = 1
-    weapon: str = 'Fists'
+    weapon = Melee_Weapon()
     
     # Player constructor
     def __init__(self, name: str, location: str = 'Start', health: int = 100):
@@ -208,8 +204,35 @@ class Player:
     def Remove_Item(self, item):
         self.inventory.item_list.remove(item)
         
-    def Melee_Attack(self, weapon):
+    def hit_check(self, attacked):
+        evade = attacked.evasion
+        cold_res = attacked.cold_resistance
+        lightning_res = attacked.lightning_resistance
+        fire_res = attacked.fire_resistance
+
+        accuracy = self.accuracy
+        weapon = self.weapon
         
+        # +1 included to hit weapons cap number 
+        # since range stops 1 below the value
+        damage_roll = rand.randrange(weapon.damage_amount[0],
+                                     weapon.damage_amount[1] + 1)
+        
+        # miss check
+        miss_roll = rand.randrange(0, )
+        
+        # !!! TODO !!!
+        # figure out how to make this a percent chance to dodge
+        evasion_roll = rand.randrange(1, evasion_rating)
+
+
+evasion_roll = rand.randrange(1, 50+1)
+evasion_check = 
+#test_roll = test_roll * 0.1
+print(test_roll)
+        
+    def Melee_Attack(self, weapon):
+        damage = self.hit_check(attacked, damage_type)
         
 
 class Enemy(Player):
