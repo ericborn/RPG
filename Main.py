@@ -10,17 +10,22 @@ to be taken by player
 """
 #import inspect
 
-room_text = []
+location_dict = {'start': 'This is the starting room, choose to inspect the room',
+                 'north': 'The north side of the castle, you can move south',
+                 'east': 'The east side of the castle, you can move west',
+                 'south': 'The south side of the castle, you can move north',
+                 'west': 'The west side of the castle, you can move to the end',
+                 'end': 'The dragon'}
 
 game_active = True
 
 class BaseItem:
 
     # base item constructor
-    def __init__(self, name, description, useAction, quantity):
+    def __init__(self, name, description, use_action, quantity):
         self.name = name
         self.description = description
-        self.useAction = useAction
+        self.use_action = use_action
         self.quantity = quantity
 
     # set the items quantity
@@ -42,15 +47,16 @@ class BaseItem:
         return()
             
 class FoodItem(BaseItem):
-    def __init__(self, name, description, useAction, quantity, heal_amount):
-        super().__init__(name, description, useAction, quantity)
-        self.useAction = 'Consume'
-
+    #def __init__(self, name, description, use_action, quantity, heal_amount):
+    #super().__init__(name, description, use_action, quantity)
+        #self.use_action = 'Consume'
+    heal_amount = 5
     def use_item(self, Player, item):
         # check for valid
-        if(Player & Player.Get_Inventoryitem.quantity > 0):
-            Player.Set_Health(self.HealAmount)
-
+        if(Player and Player.inventory.Find_Item(item)):
+            Player.Set_Health(self.heal_amount)
+        else:
+            return()
 
 
 # item tests
@@ -105,19 +111,45 @@ class Inventory:
                 print(item.name)
         else:
             print('No items')
+            
+    def Find_Item(self, item):
+        if len(self.item_list) > 0:
+            for inv_item in self.item_list:
+                if item == inv_item:
+                    print(item.name)
+                    return(inv_item)
+        else:
+            print('No Items')
 
 class Player:
     
     # Player constructor
-    def __init__(self, name, health = 100):
+    def __init__(self, name, location = 'Start', health = 100):
         self.name = name
         self.health = health
         self.inventory = Inventory()
+        self.location = location
     
+    # used to move the player
+    def Set_Location(self, location):
+        if location in location_dict:
+            self.location = location
+            return('Moved to the ' + str(location))
+        else:
+            return('Invalid move')
+    
+    # used to find where the player currently is
+    def Get_Location(self):
+        return(self.location.lower())
+    
+    def Inspect_Room(self):
+        print(location_dict[self.Get_Location()])
+    
+    # used to pick up items
     def Loot_Item(self, item_to_give):
         self.item_list.append(item_to_give)
     
-    # killed the player
+    # kill event for the player
     def Killed(self, damage_event, damage_causer):
         print("dead")
         #return("Dead")
@@ -136,13 +168,19 @@ class Player:
 
     # check the players health    
     def Get_health(self):
-        return self.health
+        return(self.health)
     
+    # use item and call remove_item
     def Use_Item(self, item):
-        item.use_item()
+        if self.inventory.Find_Item(item):
+            item.use_item(self, item)
+            self.Remove_Item(item)
+        else:
+            return('No item')
         
+    # removes an item from the item_list
     def Remove_Item(self, item):
-        self.inventory.remove(item)
+        self.inventory.item_list.remove(item)
 
 Tim = Player('Tim')
 
@@ -154,24 +192,18 @@ Tim.Take_Damage('Slash', -10, 'dragon')
 
 Tim.Get_health()
 
-apple = FoodItem('Apple', 'A bruised red apple', 'Eat', 1, 5)
-
-Tim.inventory.Get_Inventory()
-
-apple.get_quantity()
+apple = FoodItem('Apple', 'A bruised red apple', 'Eat', 1)
 
 Tim.inventory.Try_Add_Item(apple)
-# Tim.Add_to_inventory(apple)
-
-Tim.inventory.item_list.Remove_Item(apple)
 
 Tim.inventory.Get_Inventory()
 
-Jim = Player('Jim')
+Tim.Use_Item(apple)
 
-Jim.inventory.Try_Add_Item(apple)
+Tim.Inspect_Room()
 
-Jim.inventory.Get_Inventory()
+Tim.Set_Location('west')
+
 
 # test_list = [apple, apple, 'apple']
 # print(test_list[0].name)
