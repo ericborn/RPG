@@ -1,17 +1,22 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Jul 14 16:44:42 2021
-
 @author: Eric Born
-
 !!! TODO !!!
 create room class which stores description text and inventory list for items 
 to be taken by player
 """
 #import inspect
 
-location_dict = {'start': 'This is the starting room, choose to inspect the room',
-                 'north': 'The north side of the castle, you can move south',
+location_dict: dict = {'start': ('This is the starting room, choose to inspect'
+                       ' the room by typing inspect. Move to another area by '
+                       'typing move and the direction. Pickup an item by '
+                       'typing pickup item name. Attack by typing attack and '
+                       'the monsters name. Equip an item by typing equip and '
+                       'the items name. Use an item by typing use and the '
+                       'items name. Check your stats by typing stats.'),
+                       'north': ('The north side of the castle, There is a '
+                       'rusty sword lying on the ground. You can move south'),
                  'east': 'The east side of the castle, you can move west',
                  'south': 'The south side of the castle, you can move north',
                  'west': 'The west side of the castle, you can move to the end',
@@ -19,10 +24,29 @@ location_dict = {'start': 'This is the starting room, choose to inspect the room
 
 game_active = True
 
+def hit_check(attacker, attacked, damage_type):
+    evade = attacked.evasion
+    cold_res = attacked.cold_resistance
+    lightning_res = attacked.lightning_resistance
+    fire_res = attacked.fire_resistance
+    
+    accuracy = attacker.accuracy
+    weapon = attacker.weapon
+    
+
+
+class Location:
+    def __init__(self, location: str):
+        self.location = location
+        
+    #def Get_Description(self):
+             
+
 class BaseItem:
 
     # base item constructor
-    def __init__(self, name, description, use_action, quantity):
+    def __init__(self, name: str, description: str, use_action: str, 
+                 quantity: int):
         self.name = name
         self.description = description
         self.use_action = use_action
@@ -47,10 +71,8 @@ class BaseItem:
         return()
             
 class FoodItem(BaseItem):
-    #def __init__(self, name, description, use_action, quantity, heal_amount):
-    #super().__init__(name, description, use_action, quantity)
-        #self.use_action = 'Consume'
     heal_amount = 5
+    
     def use_item(self, Player, item):
         # check for valid
         if(Player and Player.inventory.Find_Item(item)):
@@ -58,25 +80,20 @@ class FoodItem(BaseItem):
         else:
             return()
 
+class Melee_Weapon(BaseItem):
+    damage_amount: list = [1, 2]
+    damage_type: str = 'Physical'
 
 # item tests
 '''
 apple = BaseItem('Apple', 'A bruised red apple', 'Eat', 1)
-
 apple.getQuantity()
-
 apple.setQuantity(1)
-
 apple.getQuantity()
-
 apple.setQuantity(-2)
-
 apple.getQuantity()
-
 #pear = BaseItem()
-
 apple.check_if_item()
-
 '''
 
 # Create functions
@@ -98,7 +115,7 @@ class Inventory:
             return('Invalid item')
     
     # add the item to the players item list
-    def Add_Item(self, item):
+    def Add_Item(self, item: str):
         new_item = item
         new_item.set_quantity(item.get_quantity())
         self.item_list.append(new_item)
@@ -112,7 +129,7 @@ class Inventory:
         else:
             print('No items')
             
-    def Find_Item(self, item):
+    def Find_Item(self, item: str):
         if len(self.item_list) > 0:
             for inv_item in self.item_list:
                 if item == inv_item:
@@ -123,15 +140,24 @@ class Inventory:
 
 class Player:
     
+    # Create a dict with available actions?
+    #actions: dict = {}
+    evasion_rating: int = 1
+    cold_resistance: int = 1
+    lightning_resistance: int = 1
+    fire_resistance: int = 1
+    accuracy: int = 1
+    weapon: str = 'Fists'
+    
     # Player constructor
-    def __init__(self, name, location = 'Start', health = 100):
+    def __init__(self, name: str, location: str = 'Start', health: int = 100):
         self.name = name
         self.health = health
         self.inventory = Inventory()
         self.location = location
     
     # used to move the player
-    def Set_Location(self, location):
+    def Set_Location(self, location: str):
         if location in location_dict:
             self.location = location
             return('Moved to the ' + str(location))
@@ -181,6 +207,15 @@ class Player:
     # removes an item from the item_list
     def Remove_Item(self, item):
         self.inventory.item_list.remove(item)
+        
+    def Melee_Attack(self, weapon):
+        
+        
+
+class Enemy(Player):
+    self.enemy_type = enemy_type
+    
+    
 
 Tim = Player('Tim')
 
@@ -247,6 +282,3 @@ Tim.Set_Location('west')
 #                   'win the game. \nCollect items along the way to aid you in'
 #                   'your quest. \nType look around to examine the room you''re'
 #                   'in. \nType "quit" to exit')
-        
-        
-
