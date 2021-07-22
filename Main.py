@@ -130,7 +130,6 @@ class Player:
     
     # Create a dict with available actions?
     #actions: dict = {}
-    evasion_rating: int = 5
     
     # physical_resistance: int = 5
     # cold_resistance: int = 1
@@ -142,8 +141,12 @@ class Player:
                              'lightning_resistance': 1,
                              'fire_resistance': 1}
 
+    # initialize fists as players weapon
+    weapon = Melee_Weapon('Fists', 'Punching machines', 'Punch', 1)
     
+    # set starting accuracy and evasion to 5
     accuracy: int = 5
+    evasion_rating: int = 5
     
     # Player constructor
     def __init__(self, name: str, location: str = 'Start', health: int = 100):
@@ -181,10 +184,20 @@ class Player:
     def Set_Health(self, change_amount):
         self.health = self.health + change_amount
         
-    # damage the player    
+    # damage the player,
+    # takes damage event, amount and causer
+    # sets health with negative change_amount
     def Take_Damage(self, damage_event, change_amount, damage_causer): 
-        self.Set_Health(change_amount)
         
+        self.Set_Health(-change_amount)
+        # concat self, type of attack, amount and attacker then return
+        damage_message = (str(self.name) + ' was hit by a ' + str(damage_event) 
+                          + ' for ' + str(change_amount) + 
+                          ' points of damage from ' + str(damage_causer.name) 
+                          + '!')
+        
+        #print(damage_message)
+        return(damage_message)
         if self.health <= 0:
             self.Killed(damage_event, damage_causer)
 
@@ -203,6 +216,11 @@ class Player:
     # removes an item from the item_list
     def Remove_Item(self, item):
         self.inventory.item_list.remove(item)
+    
+    # need a check for item of melee_weapon class
+    def Equip_Weapon(self, item):
+        if self.inventory.Find_Item(item):
+            self.weapon = item
         
     # check if player is hit by enemy
     def hit_check(self, attacker):
@@ -247,8 +265,7 @@ class Player:
                                          (res_dict[damage_type_dict[
                                              weapon.damage_type]] * 0.01))
             
-            self.Take_Damage(weapon.use_action, damage_roll, attacker)
-            return(damage_roll)
+            return(self.Take_Damage(weapon.use_action, damage_roll, attacker))
  
         
     # def Melee_Attack(self, weapon):
