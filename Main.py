@@ -5,6 +5,10 @@ Created on Wed Jul 14 16:44:42 2021
 !!! TODO !!!
 create room class which stores description text and inventory list for items 
 to be taken by player
+Find_Item # looks for item of same class 
+Killed
+ShowDeathScreen
+Restart
 """
 #import inspect
 import random as rand
@@ -22,6 +26,11 @@ location_dict: dict = {'start': ('This is the starting room, choose to inspect'
                  'south': 'The south side of the castle, you can move north',
                  'west': 'The west side of the castle, you can move to the end',
                  'end': 'The dragon'}
+
+damage_type_dict: dict = {'Physical': 'physical_resistance',
+                          'Cold': 'cold_resistance',
+                          'Fire': 'fire_resistance',
+                          'Lightning': 'lightning_resistance'}
 
 game_active = True    
 
@@ -61,42 +70,25 @@ class BaseItem:
         return()
             
 class FoodItem(BaseItem):
-    heal_amount = 5
+    heal_amount: int = 5
     
-    def use_item(self, Player, item):
+    def use_item(self, player: str, item: str):
         # check for valid
-        if(Player and Player.inventory.Find_Item(item)):
-            Player.Set_Health(self.heal_amount)
+        if(player and player.inventory.Find_Item(item)):
+            player.Set_Health(self.heal_amount)
         else:
             return()
 
 class Melee_Weapon(BaseItem):
-    
     weapon_type = 'Fists'
     damage_amount: list = [1, 3]
     damage_type: str = 'Physical'
+    attack_type: str = 'Punch'
+    hit_chance: int = 5
+
     
+# create a weapon
 rusty_sword = Melee_Weapon('Rusty Sword', 'A Rusty Sword', 'Slash', 1)
-
-rand.randrange(rusty_sword.damage_amount[0], rusty_sword.damage_amount[1] + 1)
-
-# item tests
-'''
-apple = BaseItem('Apple', 'A bruised red apple', 'Eat', 1)
-apple.getQuantity()
-apple.setQuantity(1)
-apple.getQuantity()
-apple.setQuantity(-2)
-apple.getQuantity()
-#pear = BaseItem()
-apple.check_if_item()
-'''
-
-# Create functions
-# Find_Item # looks for item of same class 
-# Killed
-# ShowDeathScreen
-# Restart
 
 class Inventory:
     def __init__(self):
@@ -138,12 +130,20 @@ class Player:
     
     # Create a dict with available actions?
     #actions: dict = {}
-    evasion_rating: int = 1
-    cold_resistance: int = 1
-    lightning_resistance: int = 1
-    fire_resistance: int = 1
-    accuracy: int = 1
-    weapon = Melee_Weapon()
+    evasion_rating: int = 5
+    
+    # physical_resistance: int = 5
+    # cold_resistance: int = 1
+    # lightning_resistance: int = 1
+    # fire_resistance: int = 1
+    
+    resistance_dict: dict = {'physical_resistance': 5,
+                             'cold_resistance': 1,
+                             'lightning_resistance': 1,
+                             'fire_resistance': 1}
+
+    
+    accuracy: int = 5
     
     # Player constructor
     def __init__(self, name: str, location: str = 'Start', health: int = 100):
@@ -204,47 +204,70 @@ class Player:
     def Remove_Item(self, item):
         self.inventory.item_list.remove(item)
         
-    def hit_check(self, attacked):
-        evade = attacked.evasion
-        cold_res = attacked.cold_resistance
-        lightning_res = attacked.lightning_resistance
-        fire_res = attacked.fire_resistance
-
-        accuracy = self.accuracy
-        weapon = self.weapon
+    # check if player is hit by enemy
+    def hit_check(self, attacker):
         
-        # +1 included to hit weapons cap number 
-        # since range stops 1 below the value
-        damage_roll = rand.randrange(weapon.damage_amount[0],
-                                     weapon.damage_amount[1] + 1)
+        # players evasion and resistance
+        evade: int = self.evasion_rating
+        res_dict: dict = self.resistance_dict
+        
+        # cold_res: int = attacked.resistance_dict['cold_resistance']
+        # lightning_res: int = attacked.resistance_dict['lightning_resistance']
+        # fire_res: int = attacked.'fire_resistance'
+        
+        # attackers accuracy and weapon
+        accuracy = attacker.accuracy
+        weapon = attacker.weapon
         
         # miss check
-        miss_roll = rand.randrange(0, )
+        # if random 0-99 > weapon hit chance * character accuracy, miss is true
+        # Base chance to miss is 75%
+        if (rand.randrange(0, 100) > 
+            rand.randrange(0, weapon.hit_chance * accuracy)):
+            return('Miss')
         
-        # !!! TODO !!!
-        # figure out how to make this a percent chance to dodge
-        evasion_roll = rand.randrange(1, evasion_rating)
-
-
-evasion_roll = rand.randrange(1, 50+1)
-evasion_check = 
-#test_roll = test_roll * 0.1
-print(test_roll)
+        # if 0-evasion_rating > random 0-99, evade is true
+        # base chance to evade is 5%
+        elif (rand.randrange(0, evade) >
+              rand.randrange(0, 100)):
+            return('Evade')
         
-    def Melee_Attack(self, weapon):
-        damage = self.hit_check(attacked, damage_type)
+        # if neither a miss or an evade, the hit landed
+        else:
+            # Calculate damage
+            # +1 included to hit weapons cap number 
+            # since range stops 1 below the value
+            damage_roll: int = rand.randrange(weapon.damage_amount[0],
+                                         weapon.damage_amount[1] + 1)
+            
+            # calculate damage after resistance
+            # damage roll - the roll multiplied by resistance for particular
+            # weapon type
+            damage_roll: int = damage_roll - (damage_roll * 
+                                         (res_dict[damage_type_dict[
+                                             weapon.damage_type]] * 0.01))
+            
+            self.Take_Damage(weapon.use_action, damage_roll, attacker)
+            return(damage_roll)
+ 
+        
+    # def Melee_Attack(self, weapon):
+    #     damage = self.hit_check(attacked, damage_type)
         
 
-class Enemy(Player):
-    self.enemy_type = enemy_type
+# class Enemy(Player):
+#     self.enemy_type = enemy_type
     
     
 
 Tim = Player('Tim')
+Jim = Player('Jim')
 
 Tim.Get_health()
 
-Tim.Take_Damage('Slash', -10, 'dragon')
+Tim.hit_check(Jim)
+
+#Tim.Take_Damage('Slash', -10, 'dragon')
 
 #Tim.Take_Damage('Slash', -100, 'dragon')
 
