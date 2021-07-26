@@ -154,6 +154,20 @@ class Player:
         self.health = health
         self.inventory = Inventory()
         self.location = location
+        
+    def Player_command():
+        command = input('Please choose a command: ')
+        if command == 'quit':
+            quit_command()
+ 
+        
+    def Return_status(self):
+        print('Your name is ' + str(self.name) + 
+              'Your location is ' + str(self.location) + 
+              '\nYour health is ' + str(self.Get_health())) #+
+              # '\nYour hunger is ' + str(self.hunger) + 
+              # '\nYour thirst is ' + str(self.thirst))
+
     
     # used to move the player
     def Set_Location(self, location: str):
@@ -176,7 +190,8 @@ class Player:
     
     # kill event for the player
     def Killed(self, damage_event, damage_causer):
-        print("dead")
+        print('You were killed by ' + str(damage_causer) + ' with a ' + 
+              str(damage_event))
         #return("Dead")
         #ShowDeathScreen(damage_causer)
     
@@ -306,42 +321,30 @@ Tim.Set_Location('west')
 # test_list = [apple, apple, 'apple']
 # print(test_list[0].name)
 
-#     def use_item(self)
- 
-# def return_status():
-#     print('Your name is ' + str(PLAYER_NAME) + 
-#           'Your location is ' + str(LOCATION) + 
-#           '\nYour life is ' + str(LIFE) +
-#           '\nYour hunger is ' + str(HUNGER) + 
-#           '\nYour thirst is ' + str(THIRST))
-
-# def player_command():
-#     command = input('Please choose a command: ')
-#     if command == 'quit':
-#         quit_command()
- 
-    
-
-        
-
-
-    
 # def move_player(room_selection):
 #     print(room_text)
 
-# def quit_command():
-#     game_active = False
+#class commands():
+    
+def quit_command():
+    game_active = False
     
 
-# while game_active: 
-#         PLAYER_NAME = input('Please choose a name or enter "quit": ')
-#         if PLAYER_NAME == 'quit':
-#             print('Please play again soon!')
-#             game_active = False
-#         else:
-            
-#             return_status()
-#             print('You must journey to the final room and defeat the dragon to' 
-#                   'win the game. \nCollect items along the way to aid you in'
-#                   'your quest. \nType look around to examine the room you''re'
-#                   'in. \nType "quit" to exit')
+while game_active: 
+    
+    # ask player for name or quit command, if quit, run quit_command
+    PLAYER_NAME = input('Please choose a name or enter "quit" to exit: ')
+        
+    if PLAYER_NAME == 'quit':
+        print('Please play again soon!')
+        quit_command()
+    else:
+        player_controller = Player(PLAYER_NAME)
+        player_controller.return_status()
+        print('You must journey to the final room and defeat the dragon to' 
+              'win the game. \nCollect items along the way to aid you in'
+              'your quest. \nType look around to examine the room you''re'
+              'in. \nType "quit" to exit')
+        
+        
+        
