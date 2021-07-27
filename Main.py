@@ -85,10 +85,17 @@ class Melee_Weapon(BaseItem):
     damage_type: str = 'Physical'
     attack_type: str = 'Punch'
     hit_chance: int = 5
-
     
 # create a weapon
 rusty_sword = Melee_Weapon('Rusty Sword', 'A Rusty Sword', 'Slash', 1)
+
+
+# class Command():
+#     def execute():
+#         return()
+    
+# class Move(Command):
+    
 
 class Inventory:
     def __init__(self):
@@ -157,13 +164,13 @@ class Player:
         
     def Player_command():
         command = input('Please choose a command: ')
-        if command == 'quit':
-            quit_command()
+        # if command == 'quit':
+        #     quit_command()
  
         
     def Return_status(self):
         print('Your name is ' + str(self.name) + 
-              'Your location is ' + str(self.location) + 
+              '\nYour location is ' + str(self.location) + 
               '\nYour health is ' + str(self.Get_health())) #+
               # '\nYour hunger is ' + str(self.hunger) + 
               # '\nYour thirst is ' + str(self.thirst))
@@ -292,30 +299,30 @@ class Player:
     
     
 
-Tim = Player('Tim')
-Jim = Player('Jim')
+# Tim = Player('Tim')
+# Jim = Player('Jim')
 
-Tim.Get_health()
+# Tim.Get_health()
 
-Tim.hit_check(Jim)
+# Tim.hit_check(Jim)
 
-#Tim.Take_Damage('Slash', -10, 'dragon')
+# #Tim.Take_Damage('Slash', -10, 'dragon')
 
-#Tim.Take_Damage('Slash', -100, 'dragon')
+# #Tim.Take_Damage('Slash', -100, 'dragon')
 
-Tim.Get_health()
+# Tim.Get_health()
 
-apple = FoodItem('Apple', 'A bruised red apple', 'Eat', 1)
+# apple = FoodItem('Apple', 'A bruised red apple', 'Eat', 1)
 
-Tim.inventory.Try_Add_Item(apple)
+# Tim.inventory.Try_Add_Item(apple)
 
-Tim.inventory.Get_Inventory()
+# Tim.inventory.Get_Inventory()
 
-Tim.Use_Item(apple)
+# Tim.Use_Item(apple)
 
-Tim.Inspect_Room()
+# Tim.Inspect_Room()
 
-Tim.Set_Location('west')
+# Tim.Set_Location('west')
 
 
 # test_list = [apple, apple, 'apple']
@@ -326,9 +333,6 @@ Tim.Set_Location('west')
 
 #class commands():
     
-def quit_command():
-    game_active = False
-    
 
 while game_active: 
     
@@ -337,14 +341,15 @@ while game_active:
         
     if PLAYER_NAME == 'quit':
         print('Please play again soon!')
-        quit_command()
+        game_active = False
     else:
         player_controller = Player(PLAYER_NAME)
-        player_controller.return_status()
+        player_controller.Return_status()
         print('You must journey to the final room and defeat the dragon to' 
               'win the game. \nCollect items along the way to aid you in'
               'your quest. \nType look around to examine the room you''re'
               'in. \nType "quit" to exit')
         
+    player_controller.Player_command()
         
         
