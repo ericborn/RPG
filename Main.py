@@ -149,7 +149,18 @@ class Player:
                              'fire_resistance': 1}
 
     # initialize fists as players weapon
-    weapon = Melee_Weapon('Fists', 'Punching machines', 'Punch', 1)
+    hand_slot_1 = Melee_Weapon('Fists', 'Punching machines', 'Punch', 1)
+    hand_slot_2 = 'Empty'
+    helmet = 'Empty'
+    body_armor = 'Empty'
+    gloves = 'Empty'
+    boots = 'Empty'
+    ring1 = 'Empty'
+    ring2 = 'Empty'
+    amulet = 'Empty'
+  
+    equipment = [hand_slot_1, hand_slot_2, helmet, body_armor, gloves, boots,
+                 ring1, ring2, amulet]
     
     # set starting accuracy and evasion to 5
     accuracy: int = 5
@@ -160,7 +171,7 @@ class Player:
         self.name = name
         self.health = health
         self.inventory = Inventory()
-        self.location = location
+        self.location = location        
         
     def Player_command():
         command = input('Please choose a command: ')
@@ -240,10 +251,10 @@ class Player:
         self.inventory.item_list.remove(item)
     
     # need a check for item of melee_weapon class
-    def Equip_Weapon(self, item):
+    def Equip_Item(self, item):
         if self.inventory.Find_Item(item):
             self.weapon = item
-        
+
     # check if player is hit by enemy
     def hit_check(self, attacker):
         
@@ -292,14 +303,19 @@ class Player:
         
     # def Melee_Attack(self, weapon):
     #     damage = self.hit_check(attacked, damage_type)
-        
+
 
 # class Enemy(Player):
 #     self.enemy_type = enemy_type
-    
-    
 
-# Tim = Player('Tim')
+
+
+Tim = Player('Tim')
+
+Tim.inventory.Add_Item(rusty_sword)
+
+Tim.inventory.Get_Inventory()
+
 # Jim = Player('Jim')
 
 # Tim.Get_health()
@@ -334,22 +350,22 @@ class Player:
 #class commands():
     
 
-while game_active: 
+# while game_active: 
     
-    # ask player for name or quit command, if quit, run quit_command
-    PLAYER_NAME = input('Please choose a name or enter "quit" to exit: ')
+#     # ask player for name or quit command, if quit, run quit_command
+#     PLAYER_NAME = input('Please choose a name or enter "quit" to exit: ')
         
-    if PLAYER_NAME == 'quit':
-        print('Please play again soon!')
-        game_active = False
-    else:
-        player_controller = Player(PLAYER_NAME)
-        player_controller.Return_status()
-        print('You must journey to the final room and defeat the dragon to' 
-              'win the game. \nCollect items along the way to aid you in'
-              'your quest. \nType look around to examine the room you''re'
-              'in. \nType "quit" to exit')
+#     if PLAYER_NAME == 'quit':
+#         print('Please play again soon!')
+#         game_active = False
+#     else:
+#         player_controller = Player(PLAYER_NAME)
+#         player_controller.Return_status()
+#         print('You must journey to the final room and defeat the dragon to' 
+#               'win the game. \nCollect items along the way to aid you in'
+#               'your quest. \nType look around to examine the room you''re'
+#               'in. \nType "quit" to exit')
         
-    player_controller.Player_command()
+#     player_controller.Player_command()
         
         
