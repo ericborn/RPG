@@ -293,11 +293,12 @@ class Player:
                           + ' for ' + str(change_amount) + 
                           ' points of damage from ' + str(damage_causer.name) 
                           + '!')
-        
-        #print(damage_message)
-        return(damage_message)
+
+        # check if lost all health, otherwise return damage message
         if self.health <= 0:
             self.Killed(damage_event, damage_causer)
+        else:    
+            return(damage_message)
 
     # check the players health    
     def Get_health(self):
@@ -316,24 +317,33 @@ class Player:
         self.inventory.item_list.remove(item)
     
     # equip item
+    # check if item in inventory, has a valid slot.
+    # if already equipped, call unequip
+    # otherwise set equip to yes, put in dict and change stats
     def Equip_Item(self, item):
         if self.inventory.Find_Item(item):
             if item.slot in self.equip_dict:
                 if item.equipped == 'y':
-                    Unequip_Item(item)                            
+                    self.Unequip_Item(item)
+                    return('Unequipped item')                           
                 else:
                     self.equip_dict[item] = item
                     self.Set_Stats('positive', item)
                     item.equipped = 'y'
+            else:
+                return('No slot found')
         else:
-            return('No slot')
-
+            return('No item found')
 
     # unequip item
+    # check if item is in equipment dictionary and is equipped
+    # set dict to empty, subtract stats, set equipped to no
     def Unequip_Item(self, item):
-        if item in self.equip_dict:
+        if item in self.equip_dict and item.equipped == 'y':
             self.equip_dict[item] = 'Empty'
             self.Set_Stats('negative', item)
+            item.equipped = 'n'
+            return('Unequipped item')
         else:
             return('No item')
 
@@ -399,72 +409,74 @@ Tim.inventory.Add_Item(rusty_breastplate)
 
 Tim.inventory.Get_Inventory()
 
+Tim.Get_Stats()
+
 Tim.Equip_Item(rusty_breastplate)
 
-Tim.Get_Stats()
+# Tim.Get_Stats()
 
 Tim.Unequip_Item(rusty_breastplate)
 
-Tim.Get_Stats()
+# Tim.Get_Stats()
 
-inv_test = Inventory()
+# inv_test = Inventory()
 
-inv_test.Add_Item(rusty_breastplate)
+# inv_test.Add_Item(rusty_breastplate)
 
-equip_dict = {'hand_slot_1': Melee_Weapon('Fists', 'Punching machines', 'Punch', 1),
-                  'hand_slot_2': 'Empty',
-                  'helmet': 'Empty',
-                  'body_armor': 'Empty',
-                  'gloves': 'Empty',
-                  'boots': 'Empty',
-                  'ring1': 'Empty',
-                  'ring2': 'Empty',
-                  'amulet': 'Empty'}
+# equip_dict = {'hand_slot_1': Melee_Weapon('Fists', 'Punching machines', 'Punch', 1),
+#                   'hand_slot_2': 'Empty',
+#                   'helmet': 'Empty',
+#                   'body_armor': 'Empty',
+#                   'gloves': 'Empty',
+#                   'boots': 'Empty',
+#                   'ring1': 'Empty',
+#                   'ring2': 'Empty',
+#                   'amulet': 'Empty'}
     
 # equip item
 # TODO
 # add check for already equipped
 
-print(rusty_breastplate.slot)
+# print(rusty_breastplate.slot)
 
-test_stats = {'phys': 5}
+# test_stats = {'phys': 5}
 
-if inv_test.Find_Item(rusty_breastplate):
-    if rusty_breastplate.slot in equip_dict:
-        if rusty_breastplate.equipped == 'y':
-            #Unequip_Item(rusty_breastplate)
-            equip_dict[rusty_breastplate.slot] = 'Empty'
-            #Set_Stats('negative', item)
-            test_stats['phys'] -= 5 
-        else:
-            #print(equip_dict[rusty_breastplate.slot])
-            equip_dict[rusty_breastplate.slot] = rusty_breastplate
-            test_stats['phys'] += 5
-            rusty_breastplate.equipped = 'y'
-    else:
-        print('No slot')
+# if inv_test.Find_Item(rusty_breastplate):
+#     if rusty_breastplate.slot in equip_dict:
+#         if rusty_breastplate.equipped == 'y':
+#             #Unequip_Item(rusty_breastplate)
+#             equip_dict[rusty_breastplate.slot] = 'Empty'
+#             #Set_Stats('negative', item)
+#             test_stats['phys'] -= 5 
+#         else:
+#             #print(equip_dict[rusty_breastplate.slot])
+#             equip_dict[rusty_breastplate.slot] = rusty_breastplate
+#             test_stats['phys'] += 5
+#             rusty_breastplate.equipped = 'y'
+#     else:
+#         print('No slot')
 
 
 
-def Equip_Item(self, item):
-    if self.inventory.Find_Item(item):
-        if item.slot in self.equip_dict:
-            if item.equipped == 'y':
-                Unequip_Item(item)                            
-            else:
-                self.equip_dict[item] = item
-                self.Set_Stats('positive', item)
-                item.equipped = 'y'
-        else:
-            return('No slot')
+# def Equip_Item(self, item):
+#     if self.inventory.Find_Item(item):
+#         if item.slot in self.equip_dict:
+#             if item.equipped == 'y':
+#                 Unequip_Item(item)                            
+#             else:
+#                 self.equip_dict[item] = item
+#                 self.Set_Stats('positive', item)
+#                 item.equipped = 'y'
+#         else:
+#             return('No slot')
 
-# unequip item
-def Unequip_Item(self, item):
-    if item in self.equip_dict:
-        self.equip_dict[item] = 'Empty'
-        self.Set_Stats('negative', item)
-    else:
-        return('No item')
+# # unequip item
+# def Unequip_Item(self, item):
+#     if item in self.equip_dict:
+#         self.equip_dict[item] = 'Empty'
+#         self.Set_Stats('negative', item)
+#     else:
+#         return('No item')
 
 # Jim = Player('Jim')
 
