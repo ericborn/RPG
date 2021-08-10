@@ -80,14 +80,57 @@ class FoodItem(BaseItem):
             return()
 
 class Melee_Weapon(BaseItem):
+    slot: str = ''
     weapon_type = 'Fists'
+    equipped = 'n'
     damage_amount: list = [1, 3]
     damage_type: str = 'Physical'
     attack_type: str = 'Punch'
     hit_chance: int = 5
-    
+ 
+class Armor(BaseItem):
+    slot: str = ''
+    equipped = 'n'
+    armor_type: str = ''
+    stats: dict = {'physical_resistance': 0,
+                   'cold_resistance': 0,
+                   'lightning_resistance': 0,
+                   'fire_resistance': 0}
+        
+ 
 # create a weapon
 rusty_sword = Melee_Weapon('Rusty Sword', 'A Rusty Sword', 'Slash', 1)
+
+rusty_breastplate = Armor('Rusty Breastplate', 'A Rusty Breastplate', 'Equip', 1)
+rusty_breastplate.slot = 'body_armor'
+rusty_breastplate.stats['physical_resistance'] = 5
+
+# equip_dict = {'hand_slot_1': Melee_Weapon('Fists', 'Punching machines', 'Punch', 1),
+#               'hand_slot_2': 'Empty',
+#               'helmet': 'Empty',
+#               'body_armor': 'Empty',
+#               'gloves': 'Empty',
+#               'boots': 'Empty',
+#               'ring1': 'Empty',
+#               'ring2': 'Empty',
+#               'amulet': 'Empty'}
+
+# equip_dict[rusty_breastplate.slot] = rusty_breastplate
+# print(equip_dict[rusty_breastplate.slot])
+
+
+# if rusty_breastplate.slot in equip_dict:
+#     print('yes')
+# else:
+#     print('no')
+
+# def Equip_Item(self, item):
+#         if self.inventory.Find_Item(item):
+#             if item.slot in self.equip_dict:
+#                 self.equip_dict[item.slot] = item
+                
+#             else:
+#                 return('No slot')
 
 
 # class Command():
@@ -114,7 +157,11 @@ class Inventory:
         new_item = item
         new_item.set_quantity(item.get_quantity())
         self.item_list.append(new_item)
-        return(new_item)
+        #return(new_item)
+    
+    def Remove_Item(self, item: str):
+        if item in self.item_list:
+            self.item_list.remove(item)
     
     # returns all inventory items
     def Get_Inventory(self):
@@ -149,18 +196,20 @@ class Player:
                              'fire_resistance': 1}
 
     # initialize fists as players weapon
-    hand_slot_1 = Melee_Weapon('Fists', 'Punching machines', 'Punch', 1)
-    hand_slot_2 = 'Empty'
-    helmet = 'Empty'
-    body_armor = 'Empty'
-    gloves = 'Empty'
-    boots = 'Empty'
-    ring1 = 'Empty'
-    ring2 = 'Empty'
-    amulet = 'Empty'
+    
+    
+    equip_dict = {'hand_slot_1': Melee_Weapon('Fists', 'Punching machines', 'Punch', 1),
+                  'hand_slot_2': 'Empty',
+                  'helmet': 'Empty',
+                  'body_armor': 'Empty',
+                  'gloves': 'Empty',
+                  'boots': 'Empty',
+                  'ring1': 'Empty',
+                  'ring2': 'Empty',
+                  'amulet': 'Empty'}
   
-    equipment = [hand_slot_1, hand_slot_2, helmet, body_armor, gloves, boots,
-                 ring1, ring2, amulet]
+    # equipment = [hand_slot_1, hand_slot_2, helmet, body_armor, gloves, boots,
+    #              ring1, ring2, amulet]
     
     # set starting accuracy and evasion to 5
     accuracy: int = 5
@@ -202,9 +251,10 @@ class Player:
     def Inspect_Room(self):
         print(location_dict[self.Get_Location()])
     
+    # moved to inventory class
     # used to pick up items
-    def Loot_Item(self, item_to_give):
-        self.item_list.append(item_to_give)
+    # def Loot_Item(self, item_to_give):
+    #     self.item_list.append(item_to_give)
     
     # kill event for the player
     def Killed(self, damage_event, damage_causer):
@@ -216,7 +266,22 @@ class Player:
     # set the players health
     def Set_Health(self, change_amount):
         self.health = self.health + change_amount
-        
+      
+    # !!! TODO !!!
+    # need to find a better method for positive/negative stat changes
+    def Set_Stats(self, direction, item):
+        if direction == 'positive':
+            for resistance in item.stats:
+                self.resistance_dict[resistance] = (self.resistance_dict[resistance] + 
+                                                item.stats[resistance])     
+        else:
+            for resistance in item.stats:
+                self.resistance_dict[resistance] = (self.resistance_dict[resistance] - 
+                                                item.stats[resistance])  
+    def Get_Stats(self):
+        for resistance in self.resistance_dict:
+            print(self.resistance_dict[resistance])
+
     # damage the player,
     # takes damage event, amount and causer
     # sets health with negative change_amount
@@ -246,14 +311,31 @@ class Player:
         else:
             return('No item')
         
-    # removes an item from the item_list
+    # removes an item from the inventory item_list
     def Remove_Item(self, item):
         self.inventory.item_list.remove(item)
     
-    # need a check for item of melee_weapon class
+    # equip item
     def Equip_Item(self, item):
         if self.inventory.Find_Item(item):
-            self.weapon = item
+            if item.slot in self.equip_dict:
+                if item.equipped == 'y':
+                    Unequip_Item(item)                            
+                else:
+                    self.equip_dict[item] = item
+                    self.Set_Stats('positive', item)
+                    item.equipped = 'y'
+        else:
+            return('No slot')
+
+
+    # unequip item
+    def Unequip_Item(self, item):
+        if item in self.equip_dict:
+            self.equip_dict[item] = 'Empty'
+            self.Set_Stats('negative', item)
+        else:
+            return('No item')
 
     # check if player is hit by enemy
     def hit_check(self, attacker):
@@ -313,8 +395,76 @@ class Player:
 Tim = Player('Tim')
 
 Tim.inventory.Add_Item(rusty_sword)
+Tim.inventory.Add_Item(rusty_breastplate)
 
 Tim.inventory.Get_Inventory()
+
+Tim.Equip_Item(rusty_breastplate)
+
+Tim.Get_Stats()
+
+Tim.Unequip_Item(rusty_breastplate)
+
+Tim.Get_Stats()
+
+inv_test = Inventory()
+
+inv_test.Add_Item(rusty_breastplate)
+
+equip_dict = {'hand_slot_1': Melee_Weapon('Fists', 'Punching machines', 'Punch', 1),
+                  'hand_slot_2': 'Empty',
+                  'helmet': 'Empty',
+                  'body_armor': 'Empty',
+                  'gloves': 'Empty',
+                  'boots': 'Empty',
+                  'ring1': 'Empty',
+                  'ring2': 'Empty',
+                  'amulet': 'Empty'}
+    
+# equip item
+# TODO
+# add check for already equipped
+
+print(rusty_breastplate.slot)
+
+test_stats = {'phys': 5}
+
+if inv_test.Find_Item(rusty_breastplate):
+    if rusty_breastplate.slot in equip_dict:
+        if rusty_breastplate.equipped == 'y':
+            #Unequip_Item(rusty_breastplate)
+            equip_dict[rusty_breastplate.slot] = 'Empty'
+            #Set_Stats('negative', item)
+            test_stats['phys'] -= 5 
+        else:
+            #print(equip_dict[rusty_breastplate.slot])
+            equip_dict[rusty_breastplate.slot] = rusty_breastplate
+            test_stats['phys'] += 5
+            rusty_breastplate.equipped = 'y'
+    else:
+        print('No slot')
+
+
+
+def Equip_Item(self, item):
+    if self.inventory.Find_Item(item):
+        if item.slot in self.equip_dict:
+            if item.equipped == 'y':
+                Unequip_Item(item)                            
+            else:
+                self.equip_dict[item] = item
+                self.Set_Stats('positive', item)
+                item.equipped = 'y'
+        else:
+            return('No slot')
+
+# unequip item
+def Unequip_Item(self, item):
+    if item in self.equip_dict:
+        self.equip_dict[item] = 'Empty'
+        self.Set_Stats('negative', item)
+    else:
+        return('No item')
 
 # Jim = Player('Jim')
 
